@@ -49,6 +49,7 @@ namespace lambdaExpressions
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
             Console.WriteLine("Visiting Method Call {0}", node);
+            Console.WriteLine(node.Method.Name);
 
             if (node.ToString().Contains(".Length"))
                 throw new InvalidOperationException("use o .Length is not allowed!");
@@ -66,6 +67,11 @@ namespace lambdaExpressions
                 case "EndsWith":
                     query = query.Replace(".EndsWith(", " ENDSWITH ");
                     Console.WriteLine(" replace with EndsWith");
+                    break;
+                case "IsNullOrEmpty":
+                    query = query.Replace($"Not(IsNullOrEmpty({node.Arguments[0]}))", $"{node.Arguments[0]}ISNOTEMPTY");
+                    query = query.Replace($"IsNullOrEmpty({node.Arguments[0]})", $"{node.Arguments[0]}ISEMPTY");
+                    Console.WriteLine(" replace with ISEMPTY");
                     break;
                 default:
                     Console.WriteLine("Throw Error here????");
@@ -103,6 +109,10 @@ namespace lambdaExpressions
             return base.VisitConstant(node);
         }
 
+        //protected override Expression Visit(UnaryExpression node)
+        //{
+
+        //}
         protected override Expression VisitBinary(BinaryExpression node)
         {
             Console.WriteLine("Visiting Binary {0}", node);
